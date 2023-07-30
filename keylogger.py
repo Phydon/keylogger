@@ -20,7 +20,6 @@ def word_in_dictionary(dictionary, word):
     return True if word.strip().lower() in dictionary else False
     
 
-
 def write_to_file(filepath, dictionary, words):
     try: 
         with open(filepath, "a") as writer:
