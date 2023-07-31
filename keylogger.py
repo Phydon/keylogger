@@ -9,11 +9,24 @@ words = []
 text = ""
 
 
+# load dictionary
 def load_words(dictionary_path):
     with open(dictionary_path) as word_file:
-        valid_words = set(word_file.read().split())
+        words = set(word_file.read().split())
 
-    return valid_words
+    return words
+
+
+def remove_special_chars(word):
+    special_chars = "?!.;:§-_"
+    for char in special_chars:
+        word = word.replace(char, '')
+
+    return word.strip()
+        
+    
+def valid_word(word):
+    return True if word.isalpha() and word.find("Key.") == -1 else False
 
 
 def word_in_dictionary(dictionary, word):
@@ -24,12 +37,10 @@ def write_to_file(filepath, dictionary, words):
     try: 
         with open(filepath, "a") as writer:
             for word in words:
-                # FIXME filters out every word that contains special chars
-                # like "!", "?", """, etc.
-                if word.isalpha() and word.find("Key.") == -1:
-                    if word_in_dictionary(dictionary, word):
-                        writer.write(word)
-                        writer.write('\n')
+                word = remove_special_chars(word)
+                if valid_word(word) and word_in_dictionary(dictionary, word):
+                    writer.write(word.lower())
+                    writer.write('\n')
 
             # FIXME -> needed?
             writer.truncate()
@@ -39,10 +50,10 @@ def write_to_file(filepath, dictionary, words):
 
 def on_press(key):
     # TODO for debugging only -> remove later
-    try:
-        print(key.char)
-    except AttributeError:
-        print(key)
+    # try:
+    #     print(key.char)
+    # except AttributeError:
+    #     print(key)
         
     global text, words
     if key == keyboard.Key.enter:
@@ -72,21 +83,21 @@ def on_press(key):
 def on_release(key):
     if key == keyboard.Key.esc:
         global words
-        print("Populating file ...")
+        print("::: Populating file ...")
         write_to_file(FILEPATH, dictionary, words)
         words = []
         
         # Stop listener
-        print("Quitting")
+        print("::: Quitting")
         return False
 
 
 if __name__ == "__main__":
     try: 
-        print("Loading dictionary ...")
+        print("::: Loading dictionary ...")
         dictionary = load_words(DICTIONARY_PATH)
         
-        print("Logging keys ...")
+        print("::: Keylogger is running ...")
         # Collect events until released
         with keyboard.Listener(
                 on_press=on_press,
