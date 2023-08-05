@@ -112,6 +112,7 @@ fn process_words(words: Vec<String>) -> Vec<(String, u64)> {
     sorted_words
 }
 
+// TODO FIXME bottleneck -> speed up (bufwriter?)
 // TODO append to file??
 fn write_processed_words_to_file(word_map: Vec<(String, u64)>, path: &str) -> io::Result<()> {
     let mut file = fs::OpenOptions::new().write(true).create(true).open(path)?;
