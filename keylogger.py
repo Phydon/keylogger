@@ -20,9 +20,9 @@ def load_words(dictionary_path):
 def remove_special_chars(word):
     special_chars = "?!.;:§-_"
     for char in special_chars:
-        word = word.replace(char, '')
+        word = word.replace(char, '').strip()
 
-    return word.strip()
+    return word
         
     
 def valid_word(word):
@@ -46,6 +46,7 @@ def write_to_file(filepath, dictionary, words):
             writer.truncate()
     except Exception as e:
         print(f"Error while writing to file: {e}")
+        sys.exit()
 
 
 def on_press(key):
