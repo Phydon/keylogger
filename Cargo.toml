@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 log = "0.4"
+flexi_logger = "0.25.6"
 ctrlc = "3.4.0"
 indicatif = "0.17.6"
 owo-colors = "3.5.0"

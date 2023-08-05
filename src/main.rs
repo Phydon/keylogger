@@ -1,3 +1,4 @@
+use flexi_logger::Logger;
 use indicatif::{HumanDuration, ProgressBar, ProgressStyle};
 use log::error;
 use owo_colors::colored::*;
@@ -27,6 +28,12 @@ fn main() {
         process::exit(0)
     })
     .expect("Error setting Ctrl-C handler");
+
+    // initialize the logger
+    let _logger = Logger::try_with_str("info") // log warn and error
+        .unwrap()
+        .start()
+        .unwrap();
 
     // Start
     let start = Instant::now();
@@ -79,7 +86,8 @@ fn get_words() -> io::Result<Vec<String>> {
             }
         }
         false => {
-            panic!("File {FILEPATH}, doesn`t exist");
+            error!("Unable to find words to process. File '{FILEPATH}' doesn`t exist.");
+            process::exit(1);
         }
     }
 
