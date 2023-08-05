@@ -1,4 +1,4 @@
-# keylogger
+# wordlog
 
 => for [espanso](https://github.com/espanso/espanso)
 
