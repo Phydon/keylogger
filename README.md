@@ -4,4 +4,6 @@
 
 > get your most used words/sentences to create an espanso match-replace for it
 
-[dictionary example](https://github.com/dwyl/english-words)
+[dictionary example_english](https://github.com/sindresorhus/word-list/blob/main/words.txt)
+
+[dictionary example_german](https://github.com/davidak/wortliste/blob/master/wortliste.txt)
