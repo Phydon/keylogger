@@ -1,5 +1,7 @@
 /target
 keylog.txt
 wordcount.txt
+keylogtest.txt
+wordcounttest.txt
 dictionary.txt
 dictionary.json

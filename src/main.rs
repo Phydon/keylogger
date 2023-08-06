@@ -12,8 +12,11 @@ use std::{
     time::{Duration, Instant},
 };
 
-const FILEPATH: &str = "keylog.txt";
-const DESTINATIONPATH: &str = "wordcount.txt";
+// TODO for testing -> remove
+// const KEYLOG_PATH: &str = "keylogtest.txt";
+// const WORDCOUNT_PATH: &str = "wordcounttest.txt";
+const KEYLOG_PATH: &str = "keylog.txt";
+const WORDCOUNT_PATH: &str = "wordcount.txt";
 
 fn main() {
     // handle Ctrl+C
@@ -44,10 +47,10 @@ fn main() {
     pb.enable_steady_tick(Duration::from_millis(120));
     pb.set_style(spinner_style);
 
-    // read words from file
+    // read words from keylog file
     pb.set_message(format!("{}", "reading file".truecolor(250, 0, 104)));
-    let words = get_words().unwrap_or_else(|err| {
-        error!("Unable to read file {}: {}", FILEPATH, err);
+    let words = get_words(KEYLOG_PATH).unwrap_or_else(|err| {
+        error!("Unable to read file {}: {}", KEYLOG_PATH, err);
         process::exit(1);
     });
 
@@ -57,12 +60,12 @@ fn main() {
 
     // write to file
     pb.set_message(format!("{}", "populating file".truecolor(250, 0, 104)));
-    write_processed_words_to_file(word_map, DESTINATIONPATH).unwrap_or_else(|err| {
-        error!("Error while writing to file {}: {}", DESTINATIONPATH, err);
+    write_processed_words_to_file(word_map, WORDCOUNT_PATH).unwrap_or_else(|err| {
+        error!("Error while writing to file {}: {}", WORDCOUNT_PATH, err);
     });
 
     // Finish
-    pb.finish_with_message(format!("{}", "done in".truecolor(250, 0, 104)));
+    pb.finish_with_message(format!("{}", "done in".truecolor(59, 179, 140)));
     println!(
         "{}",
         HumanDuration(start.elapsed())
@@ -71,12 +74,12 @@ fn main() {
     );
 }
 
-fn get_words() -> io::Result<Vec<String>> {
+fn get_words(path: &str) -> io::Result<Vec<String>> {
     let mut words = Vec::new();
 
-    match Path::new(FILEPATH).try_exists()? {
+    match Path::new(path).try_exists()? {
         true => {
-            let file = File::open(FILEPATH)?;
+            let file = File::open(path)?;
             let mut buf_reader = BufReader::new(file);
             let mut content = String::new();
             buf_reader.read_to_string(&mut content)?;
@@ -86,7 +89,7 @@ fn get_words() -> io::Result<Vec<String>> {
             }
         }
         false => {
-            error!("Unable to find words to process. File '{FILEPATH}' doesn`t exist.");
+            error!("Unable to find words to process. File '{path}' doesn`t exist.");
             process::exit(1);
         }
     }
@@ -120,14 +123,20 @@ fn process_words(words: Vec<String>) -> Vec<(String, u64)> {
     sorted_words
 }
 
-// TODO FIXME bottleneck -> speed up (bufwriter?)
-// TODO append to file??
+// TODO bottleneck -> speed up (bufwriter?)
+// TODO only write the top 100 appearances??
 fn write_processed_words_to_file(word_map: Vec<(String, u64)>, path: &str) -> io::Result<()> {
     let mut file = fs::OpenOptions::new().write(true).create(true).open(path)?;
+    let mut counter = 0;
 
     for (word, count) in word_map {
+        if counter >= 100 {
+            break;
+        }
+
         let line = format!("{word}: {count}");
         writeln!(file, "{}", line)?;
+        counter += 1;
     }
 
     Ok(())
