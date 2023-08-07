@@ -5,6 +5,7 @@ from pynput import keyboard
 
 FILEPATH = os.path.join(os.path.dirname(__file__), "keylog.txt")
 DICTIONARY_PATH = os.path.join(os.path.dirname(__file__), "dictionary.txt")
+EXE_PATH = os.path.join(os.path.dirname(__file__), "target/release/wordlog.exe")
 words = []
 text = ""
 
@@ -92,6 +93,9 @@ def on_release(key):
         print("::: Quitting")
         return False
 
+def process_file_with_rust(path_to_executable):
+    os.system(path_to_executable)
+
 
 if __name__ == "__main__":
     try: 
@@ -104,5 +108,11 @@ if __name__ == "__main__":
                 on_press=on_press,
                 on_release=on_release) as listener:
             listener.join()
+
+        try: 
+            process_file_with_rust(EXE_PATH)
+        except Exception as e:
+            print(f"Error while executing external executable: {e}")
+            sys.exit()
     except KeyboardInterrupt:
         sys.exit()
