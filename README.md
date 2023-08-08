@@ -26,5 +26,5 @@ First run:
 
 Run
 
-```py keylogger.py```
+```py wordlog.py```
 
